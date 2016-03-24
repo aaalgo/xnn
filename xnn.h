@@ -19,10 +19,11 @@ namespace xnn {
                                 // cols, -1 for FCN
         array<float, 3> means;  // pixel means, R, G, B
         // save data to buffer, return buffer + data_size
-        float *preprocess (cv::Mat const &, float *buffer) const;
-        float *preprocess (vector<cv::Mat> const &images, float *buffer) const {
+        // rgb = true: output is RGB, else output is BGR (input is always BGR)
+        float *preprocess (cv::Mat const &, float *buffer, bool rgb) const;
+        float *preprocess (vector<cv::Mat> const &images, float *buffer, bool rgb) const {
             for (auto const &image: images) {
-                buffer = preprocess(image, buffer);
+                buffer = preprocess(image, buffer, rgb);
             }
             return buffer;
         }
@@ -43,6 +44,7 @@ namespace xnn {
             apply(vector<cv::Mat>{image}, ft);
         }
         virtual void apply (vector<cv::Mat> const &, vector<float> *) = 0;
+        virtual ~Model ();
     };
 
     struct BBox {

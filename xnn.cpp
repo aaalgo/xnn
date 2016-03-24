@@ -6,7 +6,7 @@
 namespace xnn {
 
 float *Model::preprocess (cv::Mat const &image,
-                          float *buffer) const {
+                          float *buffer, bool rgb) const {
 
     BOOST_VERIFY(image.data);
     BOOST_VERIFY(image.total());
@@ -48,8 +48,16 @@ float *Model::preprocess (cv::Mat const &image,
         tmp = x;
     }
     float *ptr_b = buffer;
-    float *ptr_g = buffer + tmp.total();
-    float *ptr_r = buffer + 2 * tmp.total();
+    float *ptr_g = buffer;
+    float *ptr_r = buffer;
+    if (rgb) {
+        ptr_g += tmp.total();
+        ptr_b += 2 * tmp.total();
+    }
+    else {
+        ptr_g += tmp.total();
+        ptr_r += 2 * tmp.total();
+    }
     CHECK(tmp.elemSize() == channels() * sizeof(float));
     int off = 0;
     for (int i = 0; i < tmp.rows; ++i) {
@@ -73,6 +81,10 @@ float *Model::preprocess (cv::Mat const &image,
     if (channels() == 1) return buffer + tmp.total();
     return buffer + 3 * tmp.total();
 }
+
+Model::~Model () {
+}
+
 
 Model *Model::create (fs::path const &dir, int batch) {
     if (fs::exists(dir / "caffe.model")) return create_caffe(dir, batch);

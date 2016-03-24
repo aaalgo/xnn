@@ -67,8 +67,8 @@ public:
                 means[0] = means[1] = means[2] = channel_mean[0];
                 if (channels() > 1) {
                     means[1] = channel_mean[1];
-                    means[2] = channel_mean[2];
-                }
+                    means[0] = channel_mean[2];
+                }   // opencv/caffe is GBR
             }
             // if not proto format, then the mean file is just a bunch of textual numbers
             else {
@@ -106,7 +106,7 @@ public:
             }
         }
         float *input_data = input_blob->mutable_cpu_data();
-        float *e = preprocess(images, input_data);
+        float *e = preprocess(images, input_data, false);
         CHECK(e -input_data == input_blob->count());
         net.ForwardPrefilled();
 
