@@ -2,6 +2,7 @@
 #include <boost/assert.hpp>
 #include <iostream>
 #include <boost/program_options.hpp>
+#include <glog/logging.h>
 #include "xnn.h"
 
 
@@ -44,11 +45,13 @@ int main(int argc, char **argv) {
 
 
     unique_ptr<xnn::Model> det(xnn::Model::create(model));
+    CHECK(det->fcn());
     cv::Mat ret;
     cv::Mat input = cv::imread(ipath, CV_LOAD_IMAGE_COLOR);
     BOOST_VERIFY(input.data);
     vector<float> resp;
-    det->apply(input, &resp);
+    det->apply(vector<cv::Mat>{input}, &resp);
+    CHECK(resp.size() == input.total() * 2) << resp.size() << ' ' << input.total();
     for (auto &v: resp) {
         v = 1.0 - v;
     }

@@ -20,10 +20,11 @@ namespace xnn {
         array<float, 3> means;  // pixel means, R, G, B
         // save data to buffer, return buffer + data_size
         float *preprocess (cv::Mat const &, float *buffer) const;
-        void preprocess (vector<cv::Mat> const &images, float *buffer) const {
+        float *preprocess (vector<cv::Mat> const &images, float *buffer) const {
             for (auto const &image: images) {
                 buffer = preprocess(image, buffer);
             }
+            return buffer;
         }
         int image_buffer_size (cv::Mat const &image) {
             if (shape[2] > 1) {

@@ -47,9 +47,11 @@ float *Model::preprocess (cv::Mat const &image,
         tmp.convertTo(x, type);
         tmp = x;
     }
-    float *ptr_r = buffer;
-    float *ptr_g = ptr_r + tmp.total();
-    float *ptr_b = ptr_g + tmp.total();
+    float *ptr_b = buffer;
+    float *ptr_g = buffer + tmp.total();
+    float *ptr_r = buffer + 2 * tmp.total();
+    CHECK(tmp.elemSize() == channels() * sizeof(float));
+    int off = 0;
     for (int i = 0; i < tmp.rows; ++i) {
         float const *line = tmp.ptr<float const>(i);
         for (int j = 0; j < tmp.cols; ++j) {
@@ -58,11 +60,16 @@ float *Model::preprocess (cv::Mat const &image,
                 float g = *line++;
                 b -= means[2];
                 g -= means[1];
+                ptr_b[off] = b;
+                ptr_g[off] = g;
             }
             float r = *line++;
             r -= means[0];
+            ptr_r[off] = r;
+            ++off;
         }
     }
+    CHECK(off == tmp.total());
     if (channels() == 1) return buffer + tmp.total();
     return buffer + 3 * tmp.total();
 }

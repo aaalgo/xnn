@@ -17,11 +17,13 @@ public:
     CaffeModel (fs::path const& dir, int batch)
         : net((dir/"caffe.model").native(), TEST)
     {
-#ifdef CPU_ONLY
         Caffe::set_mode(Caffe::CPU);
+        /*
+#ifdef CPU_ONLY
 #else
         Caffe::set_mode(Caffe::GPU);
 #endif
+*/
         BOOST_VERIFY(batch >= 1);
         CHECK_EQ(net.num_inputs(), 1) << "Network should have exactly one input: " << net.num_inputs();
         input_blob = net.input_blobs()[0];
@@ -104,7 +106,8 @@ public:
             }
         }
         float *input_data = input_blob->mutable_cpu_data();
-        preprocess(images, input_data);
+        float *e = preprocess(images, input_data);
+        CHECK(e -input_data == input_blob->count());
         net.ForwardPrefilled();
 
         // compute output dimension
@@ -119,12 +122,13 @@ public:
         int off = 0;
         for (auto const &b: output_blobs) {
             int blob_dim = b->count() / batch;
-            float const *from_begin = b->cpu_data() + b->offset(0);
+            float const *from_begin = b->cpu_data();
             for (int i = 0; i < images.size(); ++i) {
                 float const *from_end = from_begin + blob_dim;
                 std::copy(from_begin, from_end, &ft->at(i * dim + off));
                 from_begin = from_end;
             }
+            CHECK(from_begin - b->cpu_data() == b->count());
             off += blob_dim;
         } 
         CHECK(off == dim);
