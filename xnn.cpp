@@ -5,6 +5,14 @@
 
 namespace xnn {
 
+int Model::mode = 0;
+
+void Model::set_mode (int m) {
+#ifndef CPU_ONLY
+    mode = m;
+#endif
+}
+
 float *Model::preprocess (cv::Mat const &image,
                           float *buffer, bool rgb) const {
 

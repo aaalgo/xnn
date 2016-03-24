@@ -9,21 +9,27 @@ using namespace caffe;
 using std::vector;
 using boost::shared_ptr;
 
-class CaffeModel: public Model {
+class CaffeSetMode {
+public:
+    CaffeSetMode (int mode) {
+        if (mode == 0) {
+            Caffe::set_mode(Caffe::CPU);
+        }
+        else {
+            Caffe::set_mode(Caffe::GPU);
+        }
+    }
+};
+
+class CaffeModel: public Model, CaffeSetMode {
     Net<float> net;
     Blob<float> *input_blob;
     vector<shared_ptr<Blob<float>>> output_blobs;
 public:
     CaffeModel (fs::path const& dir, int batch)
-        : net((dir/"caffe.model").native(), TEST)
+        : CaffeSetMode(mode),
+        net((dir/"caffe.model").native(), TEST)
     {
-        Caffe::set_mode(Caffe::CPU);
-        /*
-#ifdef CPU_ONLY
-#else
-        Caffe::set_mode(Caffe::GPU);
-#endif
-*/
         BOOST_VERIFY(batch >= 1);
         CHECK_EQ(net.num_inputs(), 1) << "Network should have exactly one input: " << net.num_inputs();
         input_blob = net.input_blobs()[0];

@@ -10,12 +10,14 @@ int main(int argc, char **argv) {
     namespace po = boost::program_options; 
     fs::path model_dir;
     fs::path image_path;
+    int mode;
 
     po::options_description desc("Allowed options");
     desc.add_options()
     ("help,h", "produce help message.")
     ("model", po::value(&model_dir), "")
     ("path", po::value(&image_path), "")
+    ("mode", po::value(&mode)->default_value(0), "")
     ;
 
     po::positional_options_description p;
@@ -31,6 +33,7 @@ int main(int argc, char **argv) {
         cerr << desc;
         return 1;
     }
+    Model::set_mode(mode);
     unique_ptr<Model> model(Model::create(model_dir));
     cv::Mat image = cv::imread(image_path.native(), -1);
     vector<float> ft;

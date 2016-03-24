@@ -12,6 +12,7 @@ namespace xnn {
 
     class Model {
     protected:
+        static int mode;        // 0: CPU, 1: GPU
         array<int, 4> shape;    // batch shape
                                 // batch_size
                                 // channel
@@ -34,6 +35,7 @@ namespace xnn {
             return shape[1] * image.total();
         }
     public:
+        static void set_mode (int m);
         bool fcn () const { return shape[2] <= 1; }
         int batch () const { return shape[0];}
         int channels () const { return shape[1];}

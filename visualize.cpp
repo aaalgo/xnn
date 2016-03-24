@@ -16,6 +16,7 @@ int main(int argc, char **argv) {
     string opath;
     float b_th;
     float b_keep;
+    int mode;
 
 
     po::options_description desc("Allowed options");
@@ -26,6 +27,7 @@ int main(int argc, char **argv) {
     ("output", po::value(&opath), "")
     ("th", po::value(&b_th)->default_value(0.05), "")
     ("keep", po::value(&b_keep)->default_value(0.95), "")
+    ("mode", po::value(&mode)->default_value(0), "")
     ;
 
 
@@ -43,7 +45,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-
+    xnn::Model::set_mode(mode);
     unique_ptr<xnn::Model> det(xnn::Model::create(model));
     CHECK(det->fcn());
     cv::Mat ret;
