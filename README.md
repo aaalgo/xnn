@@ -42,6 +42,10 @@ The model directory should contain the following files:
 - caffe.blobs: text file containing the blob name to extract, usually "prob".  If multiple blob names are given, one on each line, all the blobs will be extracted and concatenated.
 - caffe.mean[optional]: copy the xxx_mean.binaryproto file, or a text file containing 1-3 numbers providing the mean values of RGB channels.
 
+If the input blob has an image size of (1, 1), then a segmentation
+network is assumed, input images are not resized and output have
+the same size as input except for number of channels.
+
 Many pre-trained models can be found [here](https://github.com/BVLC/caffe/wiki/Model-Zoo).
 
 ## MxNet
@@ -57,13 +61,13 @@ Many pre-trained models can be found [here](https://github.com/dmlc/mxnet-model-
 
 ## Python
 The model directory is essentially a python module, which should contain the following files:
-- __init__.py: typically empty.
+- `__init__.py`: typically empty.
 - model.py: the python file containing the model.
 
 The module model.py should provide two functions:
 
-- model.shape(): returns (-1, channel, rows, cols)
-- model.load(shape): given shape, loads parameters and returns a function
+- `model.shape()`: returns (-1, channel, rows, cols)
+- `model.load(shape)`: given shape, loads parameters and returns a function
 that make prediction.
 
 The following minimal script should be used to test that
