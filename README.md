@@ -9,7 +9,9 @@ Author: Wei Dong (wdong@wdong.org)
 
 ...
 
-xnn::set_mode(1); // 0 for CPU, 1 for GPU
+xnn::set_mode(1); // 0 for CPU, 1 for GPU, doesn't affect theano
+                  // use theanorc or env variable to tweak the
+                  // behavior of theano.
 int batch = 1;
 xnn::Model *model = xnn::Model::create("model dir", batch);
 
