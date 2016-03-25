@@ -53,6 +53,8 @@ The model directory should contain the following files:
 {"shape": 224, "mean": [123.68, 116.779, 103.939], "channels":3}
 ```
 
+Many pre-trained models can be found [here](https://github.com/dmlc/mxnet-model-gallery).
+
 ## Python
 The model directory is essentially a python module, which should contain the following files:
 - __init__.py: typically empty.
