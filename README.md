@@ -9,6 +9,7 @@ Author: Wei Dong (wdong@wdong.org)
 
 ...
 
+xnn::set_mode(1); // 0 for CPU, 1 for GPU
 int batch = 1;
 xnn::Model *model = xnn::Model::create("model dir", batch);
 
