@@ -56,7 +56,7 @@ the same size as input except for number of channels.
 
 Many pre-trained models can be found [here](https://github.com/BVLC/caffe/wiki/Model-Zoo).
 
-## MxNet
+## MXNet
 The model directory should contain the following files:
 - mxnet.symbol: the JSON model file.
 - mxnet.params: model parameters.
