@@ -20,13 +20,18 @@ model->apply(vector<cv::Mat>{image}, &out);
 ```
 
 At most batch images can be passed in each invokation of Model::apply.
-The returned vector will have the size of (# category * batch) or
-(out image size * batch), depending on whether the model does
-classification or segmentation.
+If less than batch images are passed, the library internally pads the
+input up to a whole batch for prediction, so the cost will be as if
+batch images are predicted.
+The returned vector will have the size of `(#category * batch)` or
+`(out image size * #category * batch)`,
+depending on whether the model does classification or
+segmentation.
+
 
 The library is still under development and doesn't yet coherently handle
-classification and segmentation with different backends and the API is
-subject to changes.
+classification and segmentation with different backends and the deployment
+method is subject to changes.
 
 # Building and Installation
 
