@@ -26,5 +26,8 @@ classification or segmentation.
 
 # Building and Installation
 
+The library depends on that Caffe, MXNet, Theano/Lasagne and other python
+libraries are properly installed.  Use [these scripts](https://github.com/aaalgo/centos7-deep)
+to install everything on a fresh CentOS 7 installation.
 
 
