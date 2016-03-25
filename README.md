@@ -1,4 +1,4 @@
-XNN: A C++ Prediction API Library for Caffe, MXNET and Python
+XNN: A C++ Prediction API that Wrapps Caffe, MXNET and Python
 =============================================================
 
 Author: Wei Dong (wdong@wdong.org)
