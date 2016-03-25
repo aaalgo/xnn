@@ -24,3 +24,7 @@ The returned vector will have the size of (# category * batch) or
 (out image size * batch), depending on whether the model does
 classification or segmentation.
 
+# Building and Installation
+
+
+

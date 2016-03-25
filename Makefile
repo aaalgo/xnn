@@ -1,3 +1,4 @@
+.PHONY:	all install
 CC=gcc
 CXX=g++
 CFLAGS += -O3 -g
@@ -23,3 +24,7 @@ visualize:	visualize.cpp $(COMMON)
 
 test_python:	test_python.cpp $(COMMON)
 
+
+install:	libxnn.a
+	cp libxnn.a /usr/local/lib
+	cp xnn.h /usr/local/include
