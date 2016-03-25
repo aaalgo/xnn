@@ -42,10 +42,14 @@ namespace xnn {
         static Model *create (fs::path const &, int = 1);
         static Model *create_caffe (fs::path const &, int);
         static Model *create_mxnet (fs::path const &, int);
+        static Model *create_python (fs::path const &, int);
         virtual void apply (cv::Mat const &image, vector<float> *ft) {
             apply(vector<cv::Mat>{image}, ft);
         }
         virtual void apply (vector<cv::Mat> const &, vector<float> *) = 0;
+        Model () {
+            means[0] = means[1] = means[2] = 0;
+        }
         virtual ~Model ();
     };
 
