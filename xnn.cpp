@@ -62,7 +62,7 @@ float *Model::preprocess (cv::Mat const &image,
         ptr_g += tmp.total();
         ptr_b += 2 * tmp.total();
     }
-    else {
+    else if (channels() > 1) {
         ptr_g += tmp.total();
         ptr_r += 2 * tmp.total();
     }
