@@ -7,14 +7,18 @@ using namespace std;
 using namespace boost;
 using namespace xnn;
 
+// thresholding pixels by 0/N, 1/N, ...., N/N, and produce a curve
+// of x: (tp + fp)/total, y: tp/(all_positive)
 void roc (unique_ptr<Model> &model, picpac::ImageStream::Value &v,
         int N, vector<pair<double, double>> *curve) {
-    vector<float> resp;
+    vector<float> resp; // prob response
     model->apply(v.image, &resp);
     CHECK(v.annotation.type() == CV_8UC1);
     CHECK(resp.size() % v.image.total() == 0);
     CHECK(v.image.size() == v.annotation.size());
+    // response is   N prob of bg, and then N prob of fg == (1--bg)
     float *p = &resp[0];
+    // pair P(fg), label
     vector<pair<float, int>> all;
     for (int i = 0; i < v.image.rows; ++i) {
         uint8_t const *row = v.annotation.ptr<uint8_t const>(i);
@@ -80,6 +84,7 @@ int main(int argc, char **argv) {
     ("fold,f", po::value(&config.split_fold)->default_value(0), "")
     ("anno", po::value(&config.annotate)->default_value("json"), "")
     ("channels", po::value(&config.channels)->default_value(-1), "")
+    ("negate", po::value(&config.split_negate)->default_value(true), "")
     ("level", po::value(&FLAGS_minloglevel)->default_value(1),"")
     (",N", po::value(&N)->default_value(1000), "")
     ;
