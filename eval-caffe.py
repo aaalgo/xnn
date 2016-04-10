@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import sys
 import glob
 import os
 import subprocess
@@ -35,7 +36,6 @@ for it, path in all:
     out = os.path.join('eval', str(it))
     if os.path.exists(out):
         print "%d already done, skipping..." % it
-        continue
     else:
         try:
             os.remove('caffe.params')
