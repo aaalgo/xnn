@@ -7,6 +7,11 @@ using namespace std;
 using namespace boost;
 using namespace xnn;
 
+/*
+ * precision =  tp / (tp + fp)
+ * recall = tp / p
+ */
+
 // thresholding pixels by 0/N, 1/N, ...., N/N, and produce a curve
 // of x: (tp + fp)/total, y: tp/(all_positive)
 void roc (unique_ptr<Model> &model, picpac::ImageStream::Value &v,
