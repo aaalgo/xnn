@@ -14,7 +14,7 @@ using namespace xnn;
 
 // thresholding pixels by 0/N, 1/N, ...., N/N, and produce a curve
 // of x: (tp + fp)/total, y: tp/(all_positive)
-void roc (unique_ptr<Model> &model, picpac::ImageStream::Value &v,
+void roc (unique_ptr<Model> &model, picpac::ImageStream::Value &v, bool tile,
         int N, vector<pair<double, double>> *curve) {
     vector<float> resp; // prob response
     model->apply(v.image, &resp);
@@ -77,6 +77,7 @@ int main(int argc, char **argv) {
     fs::path db_path;
     int mode;
     unsigned N;
+    bool tile;
 
     po::options_description desc("Allowed options");
     desc.add_options()
@@ -92,6 +93,7 @@ int main(int argc, char **argv) {
     ("negate", po::value(&config.split_negate)->default_value(true), "")
     ("level", po::value(&FLAGS_minloglevel)->default_value(1),"")
     (",N", po::value(&N)->default_value(1000), "")
+    ("tile", "")
     ;
 
     po::positional_options_description p;
@@ -107,6 +109,7 @@ int main(int argc, char **argv) {
         cerr << desc;
         return 1;
     }
+    tile = vm.count("tile") > 0;
     google::InitGoogleLogging(argv[0]);
     Model::set_mode(mode);
     unique_ptr<Model> model(Model::create(model_dir));
@@ -117,7 +120,7 @@ int main(int argc, char **argv) {
     for (;;) {
         try {
             picpac::ImageStream::Value v(db.next());
-            roc(model, v, N, &curv);
+            roc(model, v, tile, N, &curv);
             for (unsigned i = 0; i <= N; ++i) {
                 sum[i].first += curv[i].first;
                 sum[i].second += curv[i].second;
