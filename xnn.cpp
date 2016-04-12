@@ -95,9 +95,16 @@ Model::~Model () {
 
 
 Model *Model::create (fs::path const &dir, int batch) {
+#ifdef USE_CAFFE
     if (fs::exists(dir / "caffe.model")) return create_caffe(dir, batch);
+#endif
+#ifdef USE_PYTHON
     if (fs::exists(dir / "model.py")) return create_python(dir, batch);
+#endif
+#ifdef USE_MXNET
     return create_mxnet(dir, batch);
+#endif
+    return nullptr;
 }
 
 }
