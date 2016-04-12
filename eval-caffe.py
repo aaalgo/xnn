@@ -12,18 +12,12 @@ def check_exist (path, msg):
         pass
     pass
 
-check_exist("snapshots", "no snapshots directory.")
-check_exist("caffe.model", "no caffe.model (copy deploy.prototxt)")
-check_exist("blobs", "no blobs (usually contains a single line 'prob'")
-check_exist("db", "no db")
-
-if not os.path.exists("eval"):
-    os.mkdir("eval")
+check_exist("eval", "no eval directory.")
 
 all = []
 # find all saved snapshots
-for x in glob.glob('snapshots/*.caffemodel'):
-    it = int(x.split('_')[-1].split('.')[0])
+for x in glob.glob('eval/*'):
+    it = int(os.path.basename(x))
     all.append((it, x))
     pass
 
@@ -31,18 +25,7 @@ for x in glob.glob('snapshots/*.caffemodel'):
 all = sorted(all, key = lambda x: x[0])
 
 hist = []
-for it, path in all:
-    print it, path
-    out = os.path.join('eval', str(it))
-    if os.path.exists(out):
-        print "%d already done, skipping..." % it
-    else:
-        try:
-            os.remove('caffe.params')
-        except:
-            pass
-        os.symlink(os.path.abspath(path), 'caffe.params')
-        subprocess.check_call('xnn-roc . db --mode 1 > %s' % out, shell=True)
+for it, out in all:
     cc = []
     with open(out, 'r') as f:
         for l in f:

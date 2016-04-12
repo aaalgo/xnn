@@ -52,21 +52,5 @@ namespace xnn {
         }
         virtual ~Model ();
     };
-
-    struct BBox {
-        cv::Rect box;
-        cv::Mat prob;
-    };
-
-    class BBoxDetector {
-        float prob_th;
-        float bound_th;
-    public:
-        BBoxDetector (float pth, float bth = 1)
-            : prob_th(pth),
-            bound_th(bth) {
-        }
-        void apply (cv::Mat prob, vector<BBox> *boxes);
-    };
 };
 

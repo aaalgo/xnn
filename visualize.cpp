@@ -18,7 +18,6 @@ int main(int argc, char **argv) {
     float b_keep;
     int mode;
 
-
     po::options_description desc("Allowed options");
     desc.add_options()
     ("help,h", "produce help message.")
