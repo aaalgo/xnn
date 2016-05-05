@@ -29,8 +29,6 @@ args = parser.parse_args()
 db = os.path.abspath(args.db[0])
 ws = args.ws[0]
 
-MAX_R = 100000
-
 if os.path.exists(ws):
     logging.error("%s already exists" % ws)
     sys.exit(1)

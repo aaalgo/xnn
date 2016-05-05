@@ -113,7 +113,7 @@ public:
         }
         float *input_data = input_blob->mutable_cpu_data();
         float *e = preprocess(images, input_data, false);
-        CHECK(e -input_data == input_blob->count());
+        CHECK(e -input_data <= input_blob->count());
         net.ForwardPrefilled();
 
         // compute output dimension
@@ -134,7 +134,6 @@ public:
                 std::copy(from_begin, from_end, &ft->at(i * dim + off));
                 from_begin = from_end;
             }
-            CHECK(from_begin - b->cpu_data() == b->count());
             off += blob_dim;
         } 
         CHECK(off == dim);

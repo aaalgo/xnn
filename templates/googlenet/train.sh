@@ -10,9 +10,9 @@ mkdir -p log snapshots
 SNAP=$1
 if [ -z "$SNAP" ]
 then
-    $CAFFE train --solver solver.prototxt $*
+    $CAFFE train --solver quick_solver.prototxt $*
 else
     shift
-    $CAFFE train -solver solver.prototxt -snapshot $SNAP $*
+    $CAFFE train -solver quick_solver.prototxt -snapshot $SNAP $*
 fi
 

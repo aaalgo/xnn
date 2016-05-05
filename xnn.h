@@ -87,16 +87,25 @@ namespace xnn {
             }
         };
     public:
-        void forward (cv::Mat input, cv::Mat *tiled) {
+        static void forward (cv::Mat input, cv::Mat *tiled) {
             Tiling tiling(input.size());
             cv::Mat all(tiling.size, input.type(), cv::Scalar(0,0,0));
             input.copyTo(all(tiling.tiles[0]));
-            for (unsigned i = 0; i < tiling.tiles.size(); ++i) {
+            for (unsigned i = 1; i < tiling.tiles.size(); ++i) {
                 cv::resize(input, all(tiling.tiles[i]), tiling.tiles[i].size());
             }
             *tiled = all;
         }
-        void backward (cv::Mat input, cv::Mat tiled, vector<cv::Mat> *) {
+        static void backward (cv::Mat input, cv::Mat tiled, vector<cv::Mat> *out) {
+            Tiling tiling(input.size());
+            if (tiling.size != tiled.size()) throw 0;
+            out->clear();
+            out->push_back(tiled(tiling.tiles[0]));
+            for (unsigned i = 1; i < tiling.tiles.size(); ++i) {
+                cv::Mat tmp;
+                cv::resize(tiled(tiling.tiles[i]), tmp, input.size());
+                out->push_back(tmp);
+            }
         }
     };
 }

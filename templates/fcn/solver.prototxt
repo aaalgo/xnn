@@ -19,7 +19,7 @@ max_iter: {{max_iter}}
 
 # snapshot intervals to disk
 snapshot: {{snapshot_interval}}
-snapshot_prefix: "./snapshots/fcn"
+snapshot_prefix: "./snapshots/caffe"
 
 # misc settings
 test_initialization: true

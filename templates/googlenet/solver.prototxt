@@ -1,0 +1,16 @@
+net: "train.prototxt"
+display: {{display_interval}}
+test_iter: {{test_iter}}
+test_interval: {{test_interval}}
+test_initialization: false
+average_loss: 40
+base_lr: 0.01
+lr_policy: "step"
+stepsize: 320000
+gamma: 0.96
+max_iter: {{max_iter}}
+momentum: 0.9
+weight_decay: 0.0002
+snapshot: {{snapshot_interval}}
+snapshot_prefix: "./snapshots/caffe"
+solver_mode: {{device}}

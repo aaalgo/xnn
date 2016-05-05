@@ -59,10 +59,14 @@ float *Model::preprocess (cv::Mat const &image,
     float *ptr_g = buffer;
     float *ptr_r = buffer;
     if (rgb) {
+        CHECK(channels() == 3);
         ptr_g += tmp.total();
         ptr_b += 2 * tmp.total();
     }
-    else if (channels() > 1) {
+    else if (channels() == 1) {
+        ptr_r += tmp.total();
+    }
+    else if (channels() == 2) {
         ptr_g += tmp.total();
         ptr_r += 2 * tmp.total();
     }
@@ -71,16 +75,19 @@ float *Model::preprocess (cv::Mat const &image,
     for (int i = 0; i < tmp.rows; ++i) {
         float const *line = tmp.ptr<float const>(i);
         for (int j = 0; j < tmp.cols; ++j) {
-            if (channels() > 1) {
+            int c = 0;
+            if (channels() > 2) {
                 float b = *line++;
-                float g = *line++;
-                b -= means[2];
-                g -= means[1];
+                b -= means[c++];
                 ptr_b[off] = b;
+            }
+            if (channels() > 1) {
+                float g = *line++;
+                g -= means[c++];
                 ptr_g[off] = g;
             }
             float r = *line++;
-            r -= means[0];
+            r -= means[c];
             ptr_r[off] = r;
             ++off;
         }
