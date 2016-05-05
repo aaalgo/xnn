@@ -112,7 +112,7 @@ public:
             }
         }
         float *input_data = input_blob->mutable_cpu_data();
-        float *e = preprocess(images, input_data, false);
+        float *e = preprocess(images, input_data);
         CHECK(e -input_data <= input_blob->count());
         net.ForwardPrefilled();
 

@@ -19,12 +19,13 @@ namespace xnn {
                                 // rows, -1 for FCN
                                 // cols, -1 for FCN
         array<float, 3> means;  // pixel means, R, G, B
+        bool rgb;
         // save data to buffer, return buffer + data_size
         // rgb = true: output is RGB, else output is BGR (input is always BGR)
-        float *preprocess (cv::Mat const &, float *buffer, bool rgb) const;
-        float *preprocess (vector<cv::Mat> const &images, float *buffer, bool rgb) const {
+        float *preprocess (cv::Mat const &, float *buffer) const;
+        float *preprocess (vector<cv::Mat> const &images, float *buffer) const {
             for (auto const &image: images) {
-                buffer = preprocess(image, buffer, rgb);
+                buffer = preprocess(image, buffer);
             }
             return buffer;
         }
@@ -37,6 +38,9 @@ namespace xnn {
     public:
         static void set_mode (int m);
         bool fcn () const { return shape[2] <= 1; }
+        void set_bgr2rgb () {
+            rgb = true;
+        }
         int batch () const { return shape[0];}
         int channels () const { return shape[1];}
         static Model *create (fs::path const &, int = 1);
@@ -53,7 +57,7 @@ namespace xnn {
             apply(vector<cv::Mat>{image}, ft);
         }
         virtual void apply (vector<cv::Mat> const &, vector<float> *) = 0;
-        Model () {
+        Model (): rgb(false) {
             means[0] = means[1] = means[2] = 0;
         }
         virtual ~Model ();

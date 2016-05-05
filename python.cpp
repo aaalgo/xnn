@@ -90,7 +90,7 @@ public:
             image_data.resize(bufsz * images.size());
         }
 #endif
-        float *e = preprocess(images, reinterpret_cast<float *>(PyArray_DATA(input)), true);
+        float *e = preprocess(images, reinterpret_cast<float *>(PyArray_DATA(input)));
         PyObject *tuple = Py_BuildValue("(O)", input);
         PyArrayObject *output = (PyArrayObject *)PyObject_CallObject(predict, tuple);
         CHECK(output);

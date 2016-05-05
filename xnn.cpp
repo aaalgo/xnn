@@ -14,7 +14,7 @@ void Model::set_mode (int m) {
 }
 
 float *Model::preprocess (cv::Mat const &image,
-                          float *buffer, bool rgb) const {
+                          float *buffer) const {
 
     BOOST_VERIFY(image.data);
     BOOST_VERIFY(image.total());
