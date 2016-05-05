@@ -63,10 +63,10 @@ float *Model::preprocess (cv::Mat const &image,
         ptr_g += tmp.total();
         ptr_b += 2 * tmp.total();
     }
-    else if (channels() == 1) {
+    else if (channels() == 2) {
         ptr_r += tmp.total();
     }
-    else if (channels() == 2) {
+    else if (channels() == 3) {
         ptr_g += tmp.total();
         ptr_r += 2 * tmp.total();
     }
@@ -93,8 +93,7 @@ float *Model::preprocess (cv::Mat const &image,
         }
     }
     CHECK(off == tmp.total());
-    if (channels() == 1) return buffer + tmp.total();
-    return buffer + 3 * tmp.total();
+    return buffer + channels() * tmp.total();
 }
 
 Model::~Model () {
