@@ -120,10 +120,10 @@ public:
         int dim = 0;
         for (auto const &b: output_blobs) {
             int d = b->count() / batch;
-            LOG(WARNING) << "output: " << b->shape_string();
+            LOG(INFO) << "output: " << b->shape_string();
             dim += d;
         }
-        LOG(WARNING) << "output size " << images.size() << " x " << dim;
+        LOG(INFO) << "output size " << images.size() << " x " << dim;
         ft->resize(images.size() * dim);    // total output size
         int off = 0;
         for (auto const &b: output_blobs) {

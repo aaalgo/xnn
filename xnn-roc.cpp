@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
     namespace po = boost::program_options; 
     picpac::ImageStream::Config config;
     config.loop = false;
-    config.stratify = false;
+    //config.stratify = true;
     config.anno_type = CV_8UC1;
     config.anno_color1 = 1;
     config.anno_thickness = -1; // fill
@@ -76,6 +76,7 @@ int main(int argc, char **argv) {
     fs::path model_dir;
     fs::path db_path;
     int mode;
+    int batch;
     unsigned N;
     bool tile;
 
@@ -84,15 +85,17 @@ int main(int argc, char **argv) {
     ("help,h", "produce help message.")
     ("model", po::value(&model_dir), "")
     ("db", po::value(&db_path), "")
-    ("mode", po::value(&mode)->default_value(0), "")
+    ("mode", po::value(&mode)->default_value(0), "0 for CPU or 1 for GPU")
     ("max", po::value(&config.max_size)->default_value(-1), "")
     ("split,s", po::value(&config.split)->default_value(5), "")
     ("fold,f", po::value(&config.split_fold)->default_value(0), "")
-    ("anno", po::value(&config.annotate)->default_value("json"), "")
-    ("channels", po::value(&config.channels)->default_value(-1), "")
+    ("stratify", po::value(&config.stratify)->default_value(true), "")
+    ("shuffle", po::value(&config.shuffle)->default_value(true), "")
+    ("annotate", po::value(&config.annotate)->default_value("none"), "none for classification")
     ("negate", po::value(&config.split_negate)->default_value(true), "")
     ("level", po::value(&FLAGS_minloglevel)->default_value(1),"")
     (",N", po::value(&N)->default_value(1000), "")
+    ("batch", po::value(&batch)->default_value(1), "")
     ("tile", "")
     ;
 
@@ -109,31 +112,76 @@ int main(int argc, char **argv) {
         cerr << desc;
         return 1;
     }
+    FLAGS_logtostderr = 1;
     tile = vm.count("tile") > 0;
     google::InitGoogleLogging(argv[0]);
     Model::set_mode(mode);
-    unique_ptr<Model> model(Model::create(model_dir));
+    unique_ptr<Model> model(Model::create(model_dir, batch));
     picpac::ImageStream db(db_path, config);
-    int cnt = 0;
-    vector<pair<double, double>> sum(N+1, std::make_pair(0,0));
-    vector<pair<double, double>> curv;
-    for (;;) {
-        try {
-            picpac::ImageStream::Value v(db.next());
-            roc(model, v, tile, N, &curv);
-            for (unsigned i = 0; i <= N; ++i) {
-                sum[i].first += curv[i].first;
-                sum[i].second += curv[i].second;
+    if (config.annotate == "none") {
+        int total = 0;
+        int correct = 0;
+        for (;;) {
+            vector<cv::Mat> images;
+            vector<int> labels;
+            for (unsigned i = 0; i < batch; ++i) {
+                try {
+                    picpac::ImageStream::Value v(db.next());
+                    images.push_back(v.image);
+                    unsigned l = v.label;
+                    CHECK(l == v.label);
+                    labels.push_back(l);
+                }
+                catch (picpac::EoS const &) {
+                    break;
+                }
             }
-            cnt += 1;
-            //cout << a << endl;
+            if (images.empty()) break;
+            vector<float> resp; // prob response
+            model->apply(images, &resp);
+            float const *off = &resp[0];
+            CHECK(resp.size() % images.size() == 0);
+            size_t nc = resp.size() / images.size();
+            for (unsigned l: labels) {
+                CHECK(l < nc);
+                bool ok = true;
+                for (unsigned c = 0; c < nc; ++c) {
+                    if (off[l] > off[c]) {
+                        ok = false;
+                        break;
+                    }
+                }
+                if (ok) ++correct;
+                ++total;
+                off += nc;
+            }
+            if (images.size() < batch) break;
         }
-        catch (picpac::EoS const &) {
-            break;
-        }
+        std::cerr << std::endl;
+        cout << 1.0 * correct / total << endl;
     }
-    for (auto const &p: sum) {
-        cout << p.first/cnt << '\t' << p.second/cnt << endl;
+    else {
+        int cnt = 0;
+        vector<pair<double, double>> sum(N+1, std::make_pair(0,0));
+        vector<pair<double, double>> curv;
+        for (;;) {
+            try {
+                picpac::ImageStream::Value v(db.next());
+                roc(model, v, tile, N, &curv);
+                for (unsigned i = 0; i <= N; ++i) {
+                    sum[i].first += curv[i].first;
+                    sum[i].second += curv[i].second;
+                }
+                cnt += 1;
+                //cout << a << endl;
+            }
+            catch (picpac::EoS const &) {
+                break;
+            }
+        }
+        for (auto const &p: sum) {
+            cout << p.first/cnt << '\t' << p.second/cnt << endl;
+        }
     }
     return 0;
 }
