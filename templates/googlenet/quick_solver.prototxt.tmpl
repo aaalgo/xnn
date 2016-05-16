@@ -1,0 +1,12 @@
+net: "train.prototxt"
+display: {{display_interval | default(1000,true)}}
+average_loss: 40
+base_lr: 0.01
+lr_policy: "poly"
+power: 0.5
+max_iter: {{max_iter | default(100000,true)}}
+momentum: 0.9
+weight_decay: 0.0002
+snapshot: {{snapshot_interval | default(1000,true)}}
+snapshot_prefix: "./snapshots/x"
+solver_mode: {{device | default(GPU,true)}}
