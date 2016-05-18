@@ -73,8 +73,8 @@ public:
                 means[0] = means[1] = means[2] = channel_mean[0];
                 if (channels() > 1) {
                     means[1] = channel_mean[1];
-                    means[0] = channel_mean[2];
-                }   // opencv/caffe is GBR
+                    means[2] = channel_mean[2];
+                }   
             }
             // if not proto format, then the mean file is just a bunch of textual numbers
             else {

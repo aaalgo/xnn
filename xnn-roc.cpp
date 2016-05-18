@@ -119,8 +119,11 @@ int main(int argc, char **argv) {
     unique_ptr<Model> model(Model::create(model_dir, batch));
     picpac::ImageStream db(db_path, config);
     if (config.annotate == "none") {
+        /*
         int total = 0;
         int correct = 0;
+        */
+        map<int, pair<int, int>> cnt;
         for (;;) {
             vector<cv::Mat> images;
             vector<int> labels;
@@ -146,19 +149,25 @@ int main(int argc, char **argv) {
                 CHECK(l < nc);
                 bool ok = true;
                 for (unsigned c = 0; c < nc; ++c) {
-                    if (off[l] > off[c]) {
+                    if (off[l] < off[c]) {
                         ok = false;
                         break;
                     }
                 }
-                if (ok) ++correct;
-                ++total;
+                auto &p = cnt[l];
+                ++p.second;
+                if (ok) ++p.first;
                 off += nc;
             }
             if (images.size() < batch) break;
         }
-        std::cerr << std::endl;
-        cout << 1.0 * correct / total << endl;
+        double sum = 0;
+        for (auto const &p: cnt) {
+            double r = 1.0 * p.second.first / p.second.second;
+            sum += r;
+            std::cout << p.first << ':' << r << '\t';
+        }
+        std::cout << sum / cnt.size() << std::endl;
     }
     else {
         int cnt = 0;
