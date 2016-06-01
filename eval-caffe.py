@@ -48,7 +48,9 @@ best = None
 best_score = 100
 best_path = None
 for it, path in shots:
-    print it, path
+    #print it, path
+    sys.stdout.write('%d\t' % it)
+    sys.stdout.flush()
     out = os.path.join('eval', str(it))
     if os.path.exists(out):
         #print "%d already done, skipping..." % it
@@ -57,8 +59,8 @@ for it, path in shots:
         if os.path.islink('model/caffe.params'):
             os.remove('model/caffe.params')
         os.symlink(os.path.abspath(path), 'model/caffe.params')
-        cmd = '%s model db --batch %s --mode 1 --split %d --fold %d --annotate %s | tee %s' % (os.path.join(base_dir, 'xnn-roc'), args.batch, args.split, args.fold, args.annotate, out)
-        print cmd
+        cmd = '%s model db --batch %s --mode 1 --split %d --split_fold %d --annotate %s | tee %s' % (os.path.join(base_dir, 'xnn-roc'), args.batch, args.split, args.fold, args.annotate, out)
+        #print cmd
         subprocess.check_call(cmd, shell=True)
         os.remove('model/caffe.params')
     continue

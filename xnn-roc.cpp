@@ -66,9 +66,11 @@ void roc (unique_ptr<Model> &model, picpac::ImageStream::Value &v, bool tile,
 
 int main(int argc, char **argv) {
     namespace po = boost::program_options; 
-    picpac::ImageStream::Config config;
+    picpac::BatchImageStream::Config config;
     config.loop = false;
-    //config.stratify = true;
+    config.shuffle = true;
+    config.stratify = true;
+    config.split_negate = true;
     config.anno_type = CV_8UC1;
     config.anno_color1 = 1;
     config.anno_thickness = -1; // fill
@@ -77,6 +79,7 @@ int main(int argc, char **argv) {
     fs::path db_path;
     int mode;
     int batch;
+    int max_size;
     unsigned N;
     bool tile;
 
@@ -87,17 +90,23 @@ int main(int argc, char **argv) {
     ("db", po::value(&db_path), "")
     ("mode", po::value(&mode)->default_value(0), "0 for CPU or 1 for GPU")
     ("max", po::value(&config.max_size)->default_value(-1), "")
+    ("max-size", po::value(&config.max_size)->default_value(800), "")
+    /*
     ("split,s", po::value(&config.split)->default_value(5), "")
     ("fold,f", po::value(&config.split_fold)->default_value(0), "")
     ("stratify", po::value(&config.stratify)->default_value(true), "")
     ("shuffle", po::value(&config.shuffle)->default_value(true), "")
     ("annotate", po::value(&config.annotate)->default_value("none"), "none for classification")
     ("negate", po::value(&config.split_negate)->default_value(true), "")
+    */
     ("level", po::value(&FLAGS_minloglevel)->default_value(1),"")
     (",N", po::value(&N)->default_value(1000), "")
-    ("batch", po::value(&batch)->default_value(1), "")
+    //("batch", po::value(&batch)->default_value(1), "")
     ("tile", "")
     ;
+#define PICPAC_CONFIG_UPDATE(C,p) desc.add_options()(#p, po::value(&C.p)->default_value(C.p), "")
+    PICPAC_CONFIG_UPDATE_ALL(config);
+#undef PICPAC_CONFIG_UPDATE
 
     po::positional_options_description p;
     p.add("model", 1);
@@ -116,7 +125,7 @@ int main(int argc, char **argv) {
     tile = vm.count("tile") > 0;
     google::InitGoogleLogging(argv[0]);
     Model::set_mode(mode);
-    unique_ptr<Model> model(Model::create(model_dir, batch));
+    unique_ptr<Model> model(Model::create(model_dir, config.batch));
     picpac::ImageStream db(db_path, config);
     if (config.annotate == "none") {
         /*
@@ -127,7 +136,7 @@ int main(int argc, char **argv) {
         for (;;) {
             vector<cv::Mat> images;
             vector<int> labels;
-            for (unsigned i = 0; i < batch; ++i) {
+            for (unsigned i = 0; i < config.batch; ++i) {
                 try {
                     picpac::ImageStream::Value v(db.next());
                     images.push_back(v.image);
@@ -159,7 +168,7 @@ int main(int argc, char **argv) {
                 if (ok) ++p.first;
                 off += nc;
             }
-            if (images.size() < batch) break;
+            if (images.size() < config.batch) break;
         }
         double sum = 0;
         for (auto const &p: cnt) {
