@@ -33,6 +33,7 @@ params = {
         "snapshot_interval": args.snapshot,
         "max_iter": args.it,
         "device": "GPU",
+        "annotate": "json",
 }
 
 xnn_train.prepare_ws_chdir(ws, params)
