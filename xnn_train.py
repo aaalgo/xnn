@@ -71,7 +71,7 @@ def prepare_ws_chdir (ws, params):
         pickle.dump(params, f)
     pass
 
-def basic_args (snapshot = 1000, channels=3, iteration=100000):
+def basic_args (snapshot = 4000, channels=3, iteration=400000):
     parser = argparse.ArgumentParser()
     parser.add_argument("template", nargs=1)
     parser.add_argument("db", nargs=1)  # database
@@ -81,6 +81,7 @@ def basic_args (snapshot = 1000, channels=3, iteration=100000):
     parser.add_argument("--split", default=5, type=int)
     parser.add_argument("--fold", default=0, type=int)
     parser.add_argument("--snapshot", default=snapshot, type=int)
+    parser.add_argument("--mixin")
     return parser
 
 def caffe_scan_snapshots ():
@@ -114,7 +115,8 @@ def caffe_eval_fcn ():
         if os.path.exists(params_path):
             os.remove(params_path)
         os.symlink(os.path.abspath(path), params_path)
-        subprocess.check_call('%s model %s --mode 1 --split %d --split_fold %d --annotate json --channels %s > %s' % (os.path.join(base_dir, 'xnn-roc'), params['db_path'], params['split'], params['split_fold'], params['channels'], out), shell=True)
+        if not os.path.exists(out):
+            subprocess.check_call('%s model %s --mode 1 --split %d --split_fold %d --annotate json --channels %s > %s' % (os.path.join(base_dir, 'xnn-roc'), params['db_path'], params['split'], params['split_fold'], params['channels'], out), shell=True)
         os.remove('model/caffe.params')
         cc = []
         with open(out, 'r') as f:
