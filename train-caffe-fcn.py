@@ -34,6 +34,7 @@ params = {
         "max_iter": args.it,
         "device": "GPU",
         "annotate": "json",
+        "anno_min_ratio": 0.05
 }
 
 xnn_train.prepare_ws_chdir(ws, params)
