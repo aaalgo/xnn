@@ -17,6 +17,9 @@ layer {
     {% endif %}
     annotate: "{{annotate | default(json,true)}}"
     anno_color1: 1
+    {% if anno_min_ratio %}
+    anno_min_ratio: {{anno_min_ratio}}
+    {% endif %}
     threads: 4
     perturb: true
     pert_color1: 10

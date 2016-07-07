@@ -34,11 +34,12 @@ params = {
         "max_iter": args.it,
         "device": "GPU",
         "annotate": "json",
-        "anno_min_ratio": 0.05
+        "mixin": args.mixin,
+        "mixin_group_delta": 1,
+        "anno_min_ratio": args.anno_min_ratio
 }
 
 xnn_train.prepare_ws_chdir(ws, params)
-
 
 subprocess.check_call("./train.sh 2>&1 | tee train.log", shell=True)
 
