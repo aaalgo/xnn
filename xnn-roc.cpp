@@ -140,6 +140,7 @@ int main(int argc, char **argv) {
                 try {
                     picpac::ImageStream::Value v(db.next());
                     images.push_back(v.image);
+                    CHECK(v.image.total() > 0);
                     unsigned l = v.label;
                     CHECK(l == v.label);
                     labels.push_back(l);
@@ -185,6 +186,8 @@ int main(int argc, char **argv) {
         for (;;) {
             try {
                 picpac::ImageStream::Value v(db.next());
+                CHECK(v.image.total() > 0);
+                CHECK(v.annotation.total() > 0);
                 roc(model, v, tile, N, &curv);
                 for (unsigned i = 0; i <= N; ++i) {
                     sum[i].first += curv[i].first;
