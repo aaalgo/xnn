@@ -16,6 +16,9 @@ parser = xnn_train.basic_args()
 args = parser.parse_args()
 
 db = os.path.abspath(args.db[0])
+mixin = args.mixin
+if mixin:
+    mixin = os.path.abspath(mixin)
 ws = args.ws[0]
 
 if os.path.exists(ws):
@@ -34,7 +37,7 @@ params = {
         "max_iter": args.it,
         "device": "GPU",
         "annotate": "json",
-        "mixin": args.mixin,
+        "mixin": mixin,
         "mixin_group_delta": 1,
         "anno_min_ratio": args.anno_min_ratio
 }
