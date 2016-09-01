@@ -11,7 +11,7 @@ LDLIBS = libxnn.a -lcaffe -lpicpac $(shell pkg-config --libs opencv) \
 	 -ljson11 -lboost_timer -lboost_chrono -lboost_thread -lboost_filesystem -lboost_system -lboost_program_options -lprotoc -lprotobuf -lglog #-lpython2.7
 
 COMMON = libxnn.a
-PROGS = picpac-stream-lmdb caffe-mean test predict xnn-roc #test_python # visualize predict #caffex-extract	caffex-predict batch-resize import-images
+PROGS = predict xnn-roc #test_python # visualize predict #caffex-extract	caffex-predict batch-resize import-images
 
 all:	$(COMMON) $(PROGS)
 
