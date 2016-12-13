@@ -22,6 +22,7 @@ public:
 };
 
 class CaffeModel: public Model, CaffeSetMode {
+protected:
     Net<float> net;
     Blob<float> *input_blob;
     vector<shared_ptr<Blob<float>>> output_blobs;
@@ -31,7 +32,7 @@ public:
         net((dir/"caffe.model").native(), TEST)
     {
         BOOST_VERIFY(batch >= 1);
-        CHECK_EQ(net.num_inputs(), 1) << "Network should have exactly one input: " << net.num_inputs();
+        //CHECK_EQ(net.num_inputs(), 1) << "Network should have exactly one input: " << net.num_inputs();
         input_blob = net.input_blobs()[0];
         shape[0] = batch;
         shape[1] = input_blob->shape(1);
@@ -142,6 +143,22 @@ public:
 
 Model *Model::create_caffe (fs::path const &dir, int batch) {
     return new CaffeModel(dir, batch);
+}
+
+class CaffeColorizeModel: public CaffeModel {
+public:
+    CaffeColorizeModel (fs::path const& dir, int batch)
+        : CaffeModel(dir, batch)
+    {
+        Blob<float> *trecip = net.input_blobs()[1];
+        float *data = trecip->mutable_cpu_data();
+        float v = 6 / std::log(10.0);
+        std::fill(data, data+trecip->count(), v);
+    }
+};
+
+Model *Model::create_colorize_caffe (fs::path const &dir, int batch) {
+    return new CaffeColorizeModel(dir, batch);
 }
 
 }

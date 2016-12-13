@@ -46,6 +46,7 @@ namespace xnn {
         static Model *create (fs::path const &, int = 1);
 #ifdef USE_CAFFE
         static Model *create_caffe (fs::path const &, int);
+        static Model *create_colorize_caffe (fs::path const &dir, int batch); 
 #endif
 #ifdef USE_MXNET
         static Model *create_mxnet (fs::path const &, int);
