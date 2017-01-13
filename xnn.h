@@ -54,6 +54,11 @@ namespace xnn {
 #ifdef USE_PYTHON
         static Model *create_python (fs::path const &, int);
 #endif
+#ifdef USE_TORCH
+        static Model *create_torch (fs::path const &lua_config,
+									fs::path const &model,
+									int batch, int H, int W, int C);
+#endif
         virtual void apply (cv::Mat const &image, vector<float> *ft) {
             apply(vector<cv::Mat>{image}, ft);
         }
