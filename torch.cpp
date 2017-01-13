@@ -1,7 +1,5 @@
 #include <string>
 #include <vector>
-#include <json11.hpp>
-#include <glog/logging.h>
 #include <lua.hpp>
 #include <luaT.h>
 #include <TH/TH.h>
@@ -47,7 +45,6 @@ the model.
 
 namespace xnn {
 
-using namespace json11;
 using std::string;
 using std::vector;
 
