@@ -48,6 +48,9 @@ namespace xnn {
         static Model *create_caffe (fs::path const &, int);
         static Model *create_colorize_caffe (fs::path const &dir, int batch); 
 #endif
+#ifdef USE_MOVIDIUS
+        static Model *create_movidius (fs::path const &, int);
+#endif
 #ifdef USE_MXNET
         static Model *create_mxnet (fs::path const &, int);
 #endif
